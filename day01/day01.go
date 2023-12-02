@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"sync"
 	"unicode"
 )
 
@@ -59,55 +58,34 @@ func part02() int {
 		highestIndex := -1
 		highestChk := ""
 
-		var wg sync.WaitGroup
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			for _, chk := range checkStrs {
-				i := strings.Index(str, chk)
-				if i == -1 {
-					continue
-				}
+		for _, chk := range checkStrs {
+			if i := strings.Index(str, chk); i != -1 {
 				if lowestIndex == -1 {
 					lowestIndex = i
 					lowestChk = chk
-					continue
-				}
-				if i < lowestIndex {
+				} else if i < lowestIndex {
 					lowestIndex = i
 					lowestChk = chk
 				}
 			}
-		}()
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			for _, chk := range checkStrs {
-				i := strings.LastIndex(str, chk)
-				if i == -1 {
-					continue
-				}
+
+			if i := strings.LastIndex(str, chk); i != -1 {
 				if highestIndex == -1 {
 					highestIndex = i
 					highestChk = chk
-					continue
-				}
-				if i > highestIndex {
+				} else if i > highestIndex {
 					highestIndex = i
 					highestChk = chk
 				}
 			}
-		}()
-		wg.Wait()
+		}
 
-		_, err := strconv.Atoi(lowestChk)
-		if err != nil {
+		if _, err := strconv.Atoi(lowestChk); err != nil {
 			num.WriteString(numMap[lowestChk])
 		} else {
 			num.WriteString(lowestChk)
 		}
-		_, err = strconv.Atoi(highestChk)
-		if err != nil {
+		if _, err := strconv.Atoi(highestChk); err != nil {
 			num.WriteString(numMap[highestChk])
 		} else {
 			num.WriteString(highestChk)
