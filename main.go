@@ -4,6 +4,7 @@ import (
 	"advent-of-code-2023/day01"
 	"advent-of-code-2023/day02"
 	"advent-of-code-2023/day03"
+	"advent-of-code-2023/day04"
 	"fmt"
 	"sync"
 	"time"
@@ -15,7 +16,7 @@ func main() {
 	runInParallel := false
 
 	var wg sync.WaitGroup
-	for _, fun := range []func(){day01.Main, day02.Main, day03.Main} {
+	for _, fun := range []func(){day01.Main, day02.Main, day03.Main, day04.Main} {
 		fn := fun
 
 		switch runInParallel {
