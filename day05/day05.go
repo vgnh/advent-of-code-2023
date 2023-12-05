@@ -4,6 +4,7 @@ import (
 	"advent-of-code-2023/utils"
 	"fmt"
 	"strings"
+	"sync"
 )
 
 const filename = "./day05/input.txt"
@@ -63,24 +64,31 @@ func part01() int {
 
 func part02() int {
 	lowest := -1
+	var wg sync.WaitGroup
 	for i := 0; i < len(seeds); i += 2 {
-		for j := seeds[i]; j < seeds[i]+seeds[i+1]; j++ {
-			soil := getDestOrDefault(seedSoil, j)
-			fert := getDestOrDefault(soilFert, soil)
-			water := getDestOrDefault(fertWater, fert)
-			light := getDestOrDefault(waterLight, water)
-			temp := getDestOrDefault(lightTemp, light)
-			humid := getDestOrDefault(tempHumid, temp)
-			loc := getDestOrDefault(humidLoc, humid)
-			if lowest == -1 {
-				lowest = loc
-			} else {
-				if loc < lowest {
+		i := i
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := seeds[i]; j < seeds[i]+seeds[i+1]; j++ {
+				soil := getDestOrDefault(seedSoil, j)
+				fert := getDestOrDefault(soilFert, soil)
+				water := getDestOrDefault(fertWater, fert)
+				light := getDestOrDefault(waterLight, water)
+				temp := getDestOrDefault(lightTemp, light)
+				humid := getDestOrDefault(tempHumid, temp)
+				loc := getDestOrDefault(humidLoc, humid)
+				if lowest == -1 {
 					lowest = loc
+				} else {
+					if loc < lowest {
+						lowest = loc
+					}
 				}
 			}
-		}
+		}()
 	}
+	wg.Wait()
 	return lowest
 }
 
