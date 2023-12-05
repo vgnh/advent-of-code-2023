@@ -4,92 +4,118 @@ import (
 	"advent-of-code-2023/utils"
 	"fmt"
 	"strings"
-	"sync"
 )
 
 const filename = "./day05/input.txt"
 
-func strToNumArr(input string) [][3]int {
-	strs := strings.Split(input, "\n")
-	numArray := make([][3]int, len(strs)-1)
-	for i, str := range strs[1:] {
-		tmp := utils.MapToInt(strings.Fields(str))
-		numArray[i][0] = tmp[0]
-		numArray[i][1] = tmp[1]
-		numArray[i][2] = tmp[2]
-	}
-	return numArray
+type almanacMap struct {
+	dst, src, rng int
 }
 
-var seeds, seedSoil, soilFert, fertWater, waterLight, lightTemp, tempHumid, humidLoc = func() ([]int, [][3]int, [][3]int, [][3]int, [][3]int, [][3]int, [][3]int, [][3]int) {
+func toAlmanacMap(str string) []almanacMap {
+	strs := strings.Split(str, "\n")
+	mapArray := make([]almanacMap, len(strs)-1)
+	for i, str := range strs[1:] {
+		tmp := utils.MapToInt(strings.Fields(str))
+		mapArray[i] = almanacMap{
+			dst: tmp[0],
+			src: tmp[1],
+			rng: tmp[2],
+		}
+	}
+	return mapArray
+}
+
+var seeds, seedSoil, soilFert, fertWater, waterLight, lightTemp, tempHumid, humidLoc = func() ([]int, []almanacMap, []almanacMap, []almanacMap, []almanacMap, []almanacMap, []almanacMap, []almanacMap) {
 	input := strings.Split(utils.ReadString(filename), "\n\n")
 	seeds := utils.MapToInt(strings.Split(strings.Split(input[0], ": ")[1], " "))
-	return seeds, strToNumArr(input[1]), strToNumArr(input[2]), strToNumArr(input[3]), strToNumArr(input[4]), strToNumArr(input[5]), strToNumArr(input[6]), strToNumArr(input[7])
+	return seeds, toAlmanacMap(input[1]), toAlmanacMap(input[2]), toAlmanacMap(input[3]), toAlmanacMap(input[4]), toAlmanacMap(input[5]), toAlmanacMap(input[6]), toAlmanacMap(input[7])
 }()
 
-func getDestOrDefault(input [][3]int, n int) int {
-	for _, val := range input {
-		dest := val[0]
-		source := val[1]
-		howMany := val[2]
+func getDestOrDefault(maps []almanacMap, n int) int {
+	for _, am := range maps {
+		dst := am.dst
+		src := am.src
+		rng := am.rng
 
-		if source <= n && n < source+howMany {
-			toAdd := n - source
-			return dest + toAdd
+		if src <= n && n < src+rng {
+			toAdd := n - src
+			return dst + toAdd
 		}
 	}
 	return n
 }
 
 func part01() int {
-	lowest := -1
-	for _, seed := range seeds {
-		soil := getDestOrDefault(seedSoil, seed)
-		fert := getDestOrDefault(soilFert, soil)
-		water := getDestOrDefault(fertWater, fert)
-		light := getDestOrDefault(waterLight, water)
-		temp := getDestOrDefault(lightTemp, light)
-		humid := getDestOrDefault(tempHumid, temp)
-		loc := getDestOrDefault(humidLoc, humid)
-		if lowest == -1 {
+	soil := getDestOrDefault(seedSoil, seeds[0])
+	fert := getDestOrDefault(soilFert, soil)
+	water := getDestOrDefault(fertWater, fert)
+	light := getDestOrDefault(waterLight, water)
+	temp := getDestOrDefault(lightTemp, light)
+	humid := getDestOrDefault(tempHumid, temp)
+	loc := getDestOrDefault(humidLoc, humid)
+	lowest := loc
+
+	for _, seed := range seeds[1:] {
+		soil = getDestOrDefault(seedSoil, seed)
+		fert = getDestOrDefault(soilFert, soil)
+		water = getDestOrDefault(fertWater, fert)
+		light = getDestOrDefault(waterLight, water)
+		temp = getDestOrDefault(lightTemp, light)
+		humid = getDestOrDefault(tempHumid, temp)
+		loc = getDestOrDefault(humidLoc, humid)
+		if loc < lowest {
 			lowest = loc
-		} else {
-			if loc < lowest {
-				lowest = loc
-			}
 		}
 	}
 	return lowest
 }
 
-func part02() int {
-	lowest := -1
-	var wg sync.WaitGroup
-	for i := 0; i < len(seeds); i += 2 {
-		i := i
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			for j := seeds[i]; j < seeds[i]+seeds[i+1]; j++ {
-				soil := getDestOrDefault(seedSoil, j)
-				fert := getDestOrDefault(soilFert, soil)
-				water := getDestOrDefault(fertWater, fert)
-				light := getDestOrDefault(waterLight, water)
-				temp := getDestOrDefault(lightTemp, light)
-				humid := getDestOrDefault(tempHumid, temp)
-				loc := getDestOrDefault(humidLoc, humid)
-				if lowest == -1 {
-					lowest = loc
-				} else {
-					if loc < lowest {
-						lowest = loc
-					}
-				}
-			}
-		}()
+type seedRange struct {
+	start, end int
+}
+
+func getSourceOrDefault(maps []almanacMap, n int) int {
+	for _, am := range maps {
+		dst := am.dst
+		src := am.src
+		rng := am.rng
+
+		if dst <= n && n < dst+rng {
+			toAdd := n - dst
+			return src + toAdd
+		}
 	}
-	wg.Wait()
-	return lowest
+	return n
+}
+
+func part02() int {
+	seedRanges := make([]seedRange, len(seeds)/2)
+	c := 0
+	for i := range seedRanges {
+		seedRanges[i] = seedRange{
+			start: seeds[c],
+			end:   seeds[c] + seeds[c+1] - 1,
+		}
+		c += 2
+	}
+
+	loc := 0
+	for {
+		humid := getSourceOrDefault(humidLoc, loc)
+		temp := getSourceOrDefault(tempHumid, humid)
+		light := getSourceOrDefault(lightTemp, temp)
+		water := getSourceOrDefault(waterLight, light)
+		fert := getSourceOrDefault(fertWater, water)
+		soil := getSourceOrDefault(soilFert, fert)
+		seed := getSourceOrDefault(seedSoil, soil)
+		for _, sr := range seedRanges {
+			if seed >= sr.start && seed <= sr.end {
+				return loc
+			}
+		}
+		loc++
+	}
 }
 
 func Main() {
