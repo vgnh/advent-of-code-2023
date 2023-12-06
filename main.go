@@ -6,6 +6,7 @@ import (
 	"advent-of-code-2023/day03"
 	"advent-of-code-2023/day04"
 	"advent-of-code-2023/day05"
+	"advent-of-code-2023/day06"
 	"fmt"
 	"sync"
 	"time"
@@ -17,7 +18,7 @@ func main() {
 	parallel := false
 
 	var wg sync.WaitGroup
-	for _, f := range []func() (int, func() int, func() int){day01.Main, day02.Main, day03.Main, day04.Main, day05.Main} {
+	for _, f := range []func() (int, func() int, func() int){day01.Main, day02.Main, day03.Main, day04.Main, day05.Main, day06.Main} {
 		f := f
 		fn := func() {
 			i, part01, part02 := f()
