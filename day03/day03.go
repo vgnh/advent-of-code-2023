@@ -6,7 +6,7 @@ import (
 	"unicode"
 )
 
-const filename = "./day03/input.txt"
+const filename = "./inputs/day03.txt"
 
 var schematic = func() [][]rune {
 	strs := utils.ReadLines(filename)

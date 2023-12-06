@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-const filename = "./day02/input.txt"
+const filename = "./inputs/day02.txt"
 
 var games = utils.ReadLines(filename)
 

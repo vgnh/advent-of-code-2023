@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-const filename = "./day05/input.txt"
+const filename = "./inputs/day05.txt"
 
 type almanacMap struct {
 	dst, src, rng int

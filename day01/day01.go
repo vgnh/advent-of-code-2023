@@ -7,7 +7,7 @@ import (
 	"unicode"
 )
 
-const filename = "./day01/input.txt"
+const filename = "./inputs/day01.txt"
 
 var calibrationDoc = utils.ReadLines(filename)
 
