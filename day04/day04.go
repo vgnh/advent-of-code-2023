@@ -99,6 +99,6 @@ func processCard(id int, originalMap *map[int]string) []int {
 	return cardsAfterProcess
 }
 
-func Main() (func() int, func() int) {
-	return part01, part02
+func Main() (int, func() int, func() int) {
+	return 4, part01, part02
 }

@@ -96,6 +96,6 @@ func part02() int {
 	return sum
 }
 
-func Main() (func() int, func() int) {
-	return part01, part02
+func Main() (int, func() int, func() int) {
+	return 1, part01, part02
 }

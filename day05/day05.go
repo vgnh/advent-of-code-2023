@@ -117,6 +117,6 @@ func part02() int {
 	}
 }
 
-func Main() (func() int, func() int) {
-	return part01, part02
+func Main() (int, func() int, func() int) {
+	return 5, part01, part02
 }
