@@ -2,7 +2,6 @@ package day05
 
 import (
 	"advent-of-code-2023/utils"
-	"fmt"
 	"strings"
 )
 
@@ -118,8 +117,6 @@ func part02() int {
 	}
 }
 
-func Main() {
-	fmt.Println("Advent of Code 2023, Day 05")
-	fmt.Println(part01())
-	fmt.Println(part02())
+func Main() (func() int, func() int) {
+	return part01, part02
 }

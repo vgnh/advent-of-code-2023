@@ -2,7 +2,6 @@ package day04
 
 import (
 	"advent-of-code-2023/utils"
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -100,8 +99,6 @@ func processCard(id int, originalMap *map[int]string) []int {
 	return cardsAfterProcess
 }
 
-func Main() {
-	fmt.Println("Advent of Code 2023, Day 04")
-	fmt.Println(part01())
-	fmt.Println(part02())
+func Main() (func() int, func() int) {
+	return part01, part02
 }

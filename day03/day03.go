@@ -2,7 +2,6 @@ package day03
 
 import (
 	"advent-of-code-2023/utils"
-	"fmt"
 	"strconv"
 	"unicode"
 )
@@ -164,8 +163,6 @@ func markGears(i, j, n, nLen int, schematic *[][]rune, gearNumbersMap *map[point
 	}
 }
 
-func Main() {
-	fmt.Println("Advent of Code 2023, Day 03")
-	fmt.Println(part01())
-	fmt.Println(part02())
+func Main() (func() int, func() int) {
+	return part01, part02
 }
